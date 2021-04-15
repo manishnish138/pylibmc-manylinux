@@ -14,12 +14,14 @@ env:
   - PY37="cp37-cp37m"
 before_install:
 - if [ "${TRAVIS_CPU_ARCH}" == "arm64" ]; then
-  image=quay.io/pypa/manylinux2014_aarch64;
+  name=manylinux2014_aarch64;
+  arch=aarch64;
   else
-  image=quay.io/pypa/manylinux1_x86_64;
+  name=manylinux1_x86_64;
+  arch=x86_64;
   fi
-- docker pull $image
-- docker run --name "aaa" $image /bin/sh -c "set -x && [ "x$LIBMEMCACHED_VERSION" != x ] && cd && yum update -y && mkdir -p /wheelhouse &&
+- docker pull quay.io/pypa/${image}
+- docker run --name "aaa" quay.io/pypa/${image} /bin/sh -c "set -x && [ "x$LIBMEMCACHED_VERSION" != x ] && cd && yum update -y && mkdir -p /wheelhouse &&
   yum install cyrus-sasl-devel zlib-devel curl -y &&
   curl -L -o libmemcached-hotfixes.tar.gz https://github.com/memcachier/libmemcached/archive/1.0.19.tar.gz &&
   tar -xvf libmemcached-hotfixes.tar.gz && 
@@ -38,17 +40,17 @@ before_install:
   /opt/python/${PY37}/bin/pip install --upgrade auditwheel &&
   git clone -b ${VERSION} git://github.com/lericson/pylibmc/ && cd pylibmc &&
   /opt/python/${PY27}/bin/pip wheel . -w /wheelhouse &&
-  auditwheel repair /wheelhouse/pylibmc-${VERSION}-${PY27}-linux_x86_64.whl -w /wheelhouse &&
+  auditwheel repair /wheelhouse/pylibmc-${VERSION}-${PY27}-linux_${arch}.whl -w /wheelhouse &&
   /opt/python/${PY35}/bin/pip wheel . -w /wheelhouse &&
-  auditwheel repair /wheelhouse/pylibmc-${VERSION}-${PY35}-linux_x86_64.whl -w /wheelhouse &&
+  auditwheel repair /wheelhouse/pylibmc-${VERSION}-${PY35}-linux_${arch}.whl -w /wheelhouse &&
   /opt/python/${PY36}/bin/pip wheel . -w /wheelhouse &&
-  auditwheel repair /wheelhouse/pylibmc-${VERSION}-${PY36}-linux_x86_64.whl -w /wheelhouse &&
+  auditwheel repair /wheelhouse/pylibmc-${VERSION}-${PY36}-linux_${arch}.whl -w /wheelhouse &&
   /opt/python/${PY37}/bin/pip wheel . -w /wheelhouse &&
-  auditwheel repair /wheelhouse/pylibmc-${VERSION}-${PY37}-linux_x86_64.whl -w /wheelhouse"
-- docker cp aaa:/wheelhouse/pylibmc-${VERSION}-${PY27}-manylinux1_x86_64.whl ./
-- docker cp aaa:/wheelhouse/pylibmc-${VERSION}-${PY35}-manylinux1_x86_64.whl ./
-- docker cp aaa:/wheelhouse/pylibmc-${VERSION}-${PY36}-manylinux1_x86_64.whl ./
-- docker cp aaa:/wheelhouse/pylibmc-${VERSION}-${PY37}-manylinux1_x86_64.whl ./
+  auditwheel repair /wheelhouse/pylibmc-${VERSION}-${PY37}-linux_${arch}.whl -w /wheelhouse"
+- docker cp aaa:/wheelhouse/pylibmc-${VERSION}-${PY27}-${name}.whl ./
+- docker cp aaa:/wheelhouse/pylibmc-${VERSION}-${PY35}-${name}.whl ./
+- docker cp aaa:/wheelhouse/pylibmc-${VERSION}-${PY36}-${name}.whl ./
+- docker cp aaa:/wheelhouse/pylibmc-${VERSION}-${PY37}-${name}.whl ./
 script:
 - ls
 deploy:
@@ -56,10 +58,10 @@ deploy:
   api_key:
     secure: F41kCK6rZ65C76RD7ErVeircSfjPAS7ilsY++dM2o1Ttr0x6P2h1T0nDnd24MvSmjuGB/ZO30j3vmtTTZE2yw1z2M9eDWRt8PCisERWLs3WLX0iSnc+j3gsEONGJ9zvbrkyByW9bB6BBWfwStxo2cKyKEZOsCjLO0vdHa7zw8oOStmVxcZ4a3IEhKE2/VR8EaNNDOKV/2xlaU4jmiVRlzzApVzHMcZ1SbgAnGlzAJfX5wDvxs2l18mEyi+iUoFEDIzJiBkfflgneXm3t+ZSixWlGGWHRY72j9l7bBnPxpvppRKhJ/eefKlvQilxprRMilsLQYklfccXs41cVMFQlHp+IDBug2XiStLiNTsGNglaMDw/uRSYga5gPy2KB5AHozi+r8O3GGQes/CmUgcoqc0nlPaT9tw15w1jHxTb7+eeWDDhjiBe5f3kSjTXrPQTwFVf9r2qEd8G37TE29bZr9vwFzoZjGhFaIlAAhOdAfgTJ0pRCeZwv84ulpk3VwgXQdumCfxby7jC0gBYahoL7kdKzKCCVFGg0yTyUeEjWoJt/KWJoQLZYMWbulmo0JvLhA/dTj5S7a0BRCVETVmjJiabs1bOskDr7mraUQAgpEQpWBdxle1jookQUXaObtlUhW0N5PDn/Op0W95qYysY0fJx/xPm+ZknDEspmO93ZvHs=
   file:
-    - "pylibmc-${VERSION}-${PY27}-manylinux1_x86_64.whl"
-    - "pylibmc-${VERSION}-${PY35}-manylinux1_x86_64.whl"
-    - "pylibmc-${VERSION}-${PY36}-manylinux1_x86_64.whl"
-    - "pylibmc-${VERSION}-${PY37}-manylinux1_x86_64.whl"
+    - "pylibmc-${VERSION}-${PY27}-${name}.whl"
+    - "pylibmc-${VERSION}-${PY35}-${name}.whl"
+    - "pylibmc-${VERSION}-${PY36}-${name}.whl"
+    - "pylibmc-${VERSION}-${PY37}-${name}.whl"
   skip_cleanup: true
   overwrite: true
   all_branches: true
