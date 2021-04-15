@@ -20,8 +20,8 @@ before_install:
   name=manylinux1_x86_64;
   arch=x86_64;
   fi
-- docker pull quay.io/pypa/${image}
-- docker run --name "aaa" quay.io/pypa/${image} /bin/sh -c "set -x && [ "x$LIBMEMCACHED_VERSION" != x ] && cd && yum update -y && mkdir -p /wheelhouse &&
+- docker pull quay.io/pypa/${name}
+- docker run --name "aaa" quay.io/pypa/${name} /bin/sh -c "set -x && [ "x$LIBMEMCACHED_VERSION" != x ] && cd && yum update -y && mkdir -p /wheelhouse &&
   yum install cyrus-sasl-devel zlib-devel curl -y &&
   curl -L -o libmemcached-hotfixes.tar.gz https://github.com/memcachier/libmemcached/archive/1.0.19.tar.gz &&
   tar -xvf libmemcached-hotfixes.tar.gz && 
