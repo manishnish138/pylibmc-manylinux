@@ -1,6 +1,9 @@
 sudo: required
 services:
 - docker
+arch:
+  - amd64
+  - arm64
 env:
   global:
   - VERSION="1.6.1"
@@ -10,8 +13,13 @@ env:
   - PY36="cp36-cp36m"
   - PY37="cp37-cp37m"
 before_install:
-- docker pull quay.io/pypa/manylinux1_x86_64
-- docker run --name "aaa" quay.io/pypa/manylinux1_x86_64 /bin/sh -c "set -x && [ "x$LIBMEMCACHED_VERSION" != x ] && cd && yum update -y && mkdir -p /wheelhouse &&
+- if [ "${TRAVIS_CPU_ARCH}" == "arm64" ]; then
+  image=quay.io/pypa/manylinux2014_aarch64;
+  else
+  image=quay.io/pypa/manylinux1_x86_64;
+  fi
+- docker pull $image
+- docker run --name "aaa" $image /bin/sh -c "set -x && [ "x$LIBMEMCACHED_VERSION" != x ] && cd && yum update -y && mkdir -p /wheelhouse &&
   yum install cyrus-sasl-devel zlib-devel curl -y &&
   curl -L -o libmemcached-hotfixes.tar.gz https://github.com/memcachier/libmemcached/archive/1.0.19.tar.gz &&
   tar -xvf libmemcached-hotfixes.tar.gz && 
