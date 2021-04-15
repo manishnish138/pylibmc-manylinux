@@ -1,9 +1,13 @@
 sudo: required
 services:
 - docker
-arch:
-  - amd64
-  - arm64
+
+matrix:
+  include:
+  - arch: arm64-graviton2
+    group: edge
+    virt: lxd
+  - arch: amd64
 env:
   global:
   - VERSION="1.6.1"
